@@ -1,9 +1,12 @@
 Rails.application.routes.draw do
   resources :player_stats
   resources :lineup_players
-  resources :lineups
+  # resources :lineups
   resources :players
   resources :contests
+  resources :contests do
+    resources :lineups, shallow: true
+  end
   resources :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

@@ -15,11 +15,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_07_202801) do
   enable_extension "pg_catalog.plpgsql"
 
   create_table "contests", force: :cascade do |t|
-    t.string "name"
-    t.decimal "entry"
-    t.integer "salary_cap"
-    t.datetime "start_time"
-    t.string "status"
+    t.string "name", null: false
+    t.decimal "entry", null: false
+    t.integer "salary_cap", null: false
+    t.datetime "start_time", null: false
+    t.string "status", null: false
     t.integer "cached_leader_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -47,9 +47,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_07_202801) do
 
   create_table "player_stats", force: :cascade do |t|
     t.bigint "player_id", null: false
-    t.integer "game_week"
-    t.jsonb "stats"
-    t.decimal "fantasy_points"
+    t.integer "game_week", null: false
+    t.jsonb "stats", null: false
+    t.decimal "fantasy_points", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["player_id"], name: "index_player_stats_on_player_id"
@@ -65,8 +65,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_07_202801) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "name"
-    t.decimal "balance"
+    t.string "name", null: false
+    t.decimal "balance", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
