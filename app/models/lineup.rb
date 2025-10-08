@@ -7,20 +7,12 @@ class Lineup < ApplicationRecord
   validates :total_score, numericality: { only_integer: true }, allow_nil: true
   validate :lineup_salary_cap, :position_requirements, :entry_balance
 
-  POSITIONS = {
-    QB: "QB",
-    RB: "RB",
-    WR: "WR",
-    TW: "TE"
-  }
-
   POSITION_COUNTS = {
     QB: 1,
     RB: 2,
     WR: 3,
     TW: 1
   }
-
 
   private
 
@@ -32,7 +24,7 @@ class Lineup < ApplicationRecord
   def position_requirements
     positions_left = POSITION_COUNTS.deep_dup
     players.each do |player|
-      if positions_left[player.position]
+      if !positions_left[player.position] || positions_left[player.position] == 0
         return false
       end
 
