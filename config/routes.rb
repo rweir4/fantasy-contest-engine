@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   resources :player_stats
   resources :lineup_players
-  # resources :lineups
   resources :players
   resources :contests
   resources :contests do

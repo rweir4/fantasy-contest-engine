@@ -1,51 +1,49 @@
 class LineupsController < ApplicationController
   before_action :set_lineup, only: %i[ show update destroy ]
+  before_action :set_contest, only: [ :index, :create ]
 
-  # GET /lineups
   def index
-    @lineups = Lineup.all
+    @lineups = @contest.lineups
 
     render json: @lineups
   end
 
-  # GET /lineups/1
   def show
     render json: @lineup
   end
 
-  # POST /lineups
   def create
-    @lineup = Lineup.new(lineup_params)
+    @lineup = @contest.lineups.build(lineup_params)
 
     if @lineup.save
       render json: @lineup, status: :created, location: @lineup
     else
-      render json: @lineup.errors, status: :unprocessable_content
+      render json: { errors: @lineup.errors.full_messages }, status: :unprocessable_content
     end
   end
 
-  # PATCH/PUT /lineups/1
   def update
     if @lineup.update(lineup_params)
       render json: @lineup
     else
-      render json: @lineup.errors, status: :unprocessable_content
+      render json: { errors: @lineup.errors.full_messages }, status: :unprocessable_content
     end
   end
 
-  # DELETE /lineups/1
   def destroy
     @lineup.destroy!
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_lineup
       @lineup = Lineup.find(params.expect(:id))
     end
 
-    # Only allow a list of trusted parameters through.
+    def set_contest
+      @contest = Contest.find(params.expect(:contest_id))
+    end
+
     def lineup_params
-      params.expect(lineup: [ :user_id, :contest_id, :total_score ])
+      params.expect(lineup: [ :user_id, :total_score ])
     end
 end

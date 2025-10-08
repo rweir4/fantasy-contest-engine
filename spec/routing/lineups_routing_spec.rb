@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe LineupsController, type: :routing do
   describe "routing" do
     it "routes to #index" do
-      expect(get: "/lineups").to route_to("lineups#index")
+      expect(get: "contests/1/lineups").to route_to("lineups#index", contest_id: "1")
     end
 
     it "routes to #show" do
@@ -12,7 +12,7 @@ RSpec.describe LineupsController, type: :routing do
 
 
     it "routes to #create" do
-      expect(post: "/lineups").to route_to("lineups#create")
+      expect(post: "contests/1/lineups").to route_to("lineups#create", contest_id: "1")
     end
 
     it "routes to #update via PUT" do
