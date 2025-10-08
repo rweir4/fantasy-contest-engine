@@ -21,15 +21,22 @@ class Lineup < ApplicationRecord
     total_salary <= contest.salary_cap
   end
 
+  # really dependent on setting up joins
   def position_requirements
-    positions_left = POSITION_COUNTS.deep_dup
-    players.each do |player|
-      if !positions_left[player.position] || positions_left[player.position] == 0
-        return false
-      end
+    #   positions_left = POSITION_COUNTS.deep_dup
+    #   players.each do |player|
+    #     if positions_left[player.position] == 0
+    #       raise "Too many players with the #{player.position} position"
+    #     elsif !POSITION_COUNTS[player.position]
+    #       raise "Position #{player.position} does not exist"
+    #     end
 
-      positions_left[player.position] -= 1
-    end
+    #     positions_left[player.position] -= 1
+    #   end
+
+    #   if positions_left.values.any? { |count| count > 0 }
+    #     raise "Make sure all positions are covered."
+    #   end
   end
 
   def entry_balance
