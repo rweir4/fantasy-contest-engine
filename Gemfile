@@ -4,6 +4,7 @@ source "https://rubygems.org"
 gem "rails", "~> 8.0.3"
 gem "rspec-rails"
 gem "faker"
+gem "factory_bot_rails"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
 # Use the Puma web server [https://github.com/puma/puma]

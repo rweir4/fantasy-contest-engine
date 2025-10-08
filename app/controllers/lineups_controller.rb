@@ -13,7 +13,9 @@ class LineupsController < ApplicationController
   end
 
   def create
-    @lineup = @contest.lineups.build(lineup_params)
+    @lineup = @contest.lineups.build(lineup_params.except(:player_ids))
+
+    create_lineup_players if lineup_params[:player_ids]
 
     if @lineup.save
       render json: @lineup, status: :created, location: @lineup
@@ -35,6 +37,16 @@ class LineupsController < ApplicationController
   end
 
   private
+    def create_lineup_players
+      binding.pry
+      player_ids = lineup_params[:player_ids]
+
+      missing_ids = player_ids - Player.where(id: player_ids).pluck(:id)
+      raise ActiveRecord::RecordNotFound, "Players not found: #{missing_ids.join(', ')}" if missing_ids.any?
+
+      @lineup.player_ids = player_ids
+    end
+
     def set_lineup
       @lineup = Lineup.find(params.expect(:id))
     end
@@ -44,6 +56,6 @@ class LineupsController < ApplicationController
     end
 
     def lineup_params
-      params.expect(lineup: [ :user_id, :total_score ])
+      params.expect(lineup: [ :user_id, :total_score, :player_ids ])
     end
 end
