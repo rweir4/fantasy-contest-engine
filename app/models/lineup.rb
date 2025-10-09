@@ -49,7 +49,7 @@ class Lineup < ApplicationRecord
       @errors << { error_type: ERROR_TYPES[:NOT_ENOUGH_PLAYERS] }
     end
 
-    raise "#{@errors.inspect}" unless @errors.empty?
+    raise "#{@errors}" unless @errors.empty?
   end
 
   def entry_balance

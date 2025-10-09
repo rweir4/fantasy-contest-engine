@@ -13,11 +13,9 @@ class LineupsController < ApplicationController
   end
 
   def create
-    puts "Shouldn't get here"
     @lineup = @contest.lineups.build(lineup_params.except(:player_ids))
-    puts "lineup_params #{lineup_params}"
 
-    create_lineup_players if lineup_params[:player_ids]
+    create_lineup_players
 
     if @lineup.save
       render json: @lineup, status: :created, location: @lineup

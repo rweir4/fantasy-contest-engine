@@ -14,6 +14,7 @@ RSpec.describe "/lineups", type: :request do
 
   let(:lineup_player_ids) { create_valid_player_set.values.map(&:id) }
   let(:user) { User.create!({ name: 'Rebecca Weir', balance: 500.00 }) }
+  let(:user_unbalanced) { User.create!({ name: 'Rebecca Weir', balance: 10.00 }) }
   let(:contest) {
     Contest.create!({
       name: 'First Contest',
@@ -36,8 +37,8 @@ RSpec.describe "/lineups", type: :request do
 
   let(:invalid_attributes) {
     {
-      user_id: user.id,
-      total_score: 100.5,
+      user_id: user_unbalanced.id,
+      total_score: 100,
       player_ids: lineup_player_ids
     }
   }
@@ -79,10 +80,12 @@ RSpec.describe "/lineups", type: :request do
 
     context "with invalid parameters" do
       it "does not create a new Lineup" do
+        puts "Lineup.count, #{Lineup.count}"
         expect {
           post contest_lineups_url(contest),
-               params: { lineup: invalid_attributes }, as: :json
+          params: { lineup: invalid_attributes }, as: :json
         }.to change(Lineup, :count).by(0)
+        puts "Lineup.count 2, #{Lineup.count}"
       end
 
       it "renders a JSON response with errors for the new lineup" do
