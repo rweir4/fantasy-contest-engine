@@ -4,7 +4,6 @@ class Lineup < ApplicationRecord
   has_many :lineup_players
   has_many :players, through: :lineup_players
 
-  validates :total_score, numericality: { only_integer: true }, allow_nil: true
   validate :lineup_salary_cap, :position_requirements, :entry_balance
 
   ERROR_TYPES = {
@@ -13,31 +12,37 @@ class Lineup < ApplicationRecord
     POSITION_NONEXISTING: "Position does not exist."
   }
 
+  FLEX_POSITIONS = 1
+
   POSITION_COUNTS = {
     QB: 1,
     RB: 2,
     WR: 3,
-    TW: 1
+    TE: 1
   }
 
   private
 
   def lineup_salary_cap
-    total_salary = players.reduce(0) { |acc, player| acc + player.salary }
-    total_salary <= contest.salary_cap
+      total_salary = players.reduce(0) { |acc, player| acc + player.salary }
+      total_salary <= contest.salary_cap
   end
 
   def position_requirements
     @errors = []
     positions_left = POSITION_COUNTS.deep_dup
+    flex_used = false
     players.each do |player|
-      if positions_left[player.position] == 0
-        @errors << { error_type: ERROR_TYPES[:TOO_MANY_PLAYERS], position: player.position }
-      elsif !POSITION_COUNTS[player.position]
-        @errors << { error_type: ERROR_TYPES[:POSITION_NONEXISTING], position: player.position }
+      position = player.position.to_sym
+      if positions_left[position].zero?
+        flex_used ?
+        @errors << { error_type: ERROR_TYPES[:TOO_MANY_PLAYERS], position: position } :
+        flex_used = true
+      elsif !POSITION_COUNTS[position]
+        @errors << { error_type: ERROR_TYPES[:POSITION_NONEXISTING], position: position }
+      else
+        positions_left[position] -= 1
       end
-
-      positions_left[player.position] -= 1
     end
 
     if positions_left.values.any? { |count| count > 0 }

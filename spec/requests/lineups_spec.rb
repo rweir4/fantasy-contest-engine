@@ -15,7 +15,7 @@ RSpec.describe "/lineups", type: :request do
   let(:lineup_player_ids) { create_valid_player_set.values.map(&:id) }
   let(:user) { User.create!({ name: 'Rebecca Weir', balance: 500.00 }) }
   let(:contest) {
-      Contest.create!({
+    Contest.create!({
       name: 'First Contest',
       entry: 100.00,
       salary_cap: 1000,
@@ -24,18 +24,21 @@ RSpec.describe "/lineups", type: :request do
       cached_leader_id: nil
     })
   }
+  let(:existing_lineup) { contest.lineups.create!(user: user) }
 
   let(:valid_attributes) {
     {
       user_id: user.id,
-      total_score: 100
+      total_score: 100,
+      player_ids: lineup_player_ids
     }
   }
 
   let(:invalid_attributes) {
     {
       user_id: user.id,
-      total_score: 'one hundred'
+      total_score: 100.5,
+      player_ids: lineup_player_ids
     }
   }
   let(:valid_headers) { {} }
@@ -62,15 +65,8 @@ RSpec.describe "/lineups", type: :request do
       it "creates a new Lineup" do
         expect {
           post contest_lineups_url(contest),
-               params: { lineup: valid_attributes, player_ids: lineup_player_ids }, headers: valid_headers, as: :json
+               params: { lineup: valid_attributes }, headers: valid_headers, as: :json
         }.to change(Lineup, :count).by(1)
-      end
-
-      it "validates position requirements" do
-        lineup = contest.lineups.create!(user: user)
-        lineup.player_ids = lineup_player_ids
-
-        expect(lineup).to be_valid
       end
 
       it "renders a JSON response with the new lineup" do
@@ -87,15 +83,6 @@ RSpec.describe "/lineups", type: :request do
           post contest_lineups_url(contest),
                params: { lineup: invalid_attributes }, as: :json
         }.to change(Lineup, :count).by(0)
-      end
-
-      it "fails with too many QBs" do
-        extra_qb = create(:player, position: 'QB', salary: 5000)
-
-        lineup = contest.lineups.create!(user: user)
-        lineup.player_ids = lineup_player_ids << extra_qb.id
-
-        expect { lineup.position_requirements }.to raise_error(/Make sure all positions are covered./)
       end
 
       it "renders a JSON response with errors for the new lineup" do

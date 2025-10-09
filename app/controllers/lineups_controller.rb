@@ -13,7 +13,9 @@ class LineupsController < ApplicationController
   end
 
   def create
+    puts "Shouldn't get here"
     @lineup = @contest.lineups.build(lineup_params.except(:player_ids))
+    puts "lineup_params #{lineup_params}"
 
     create_lineup_players if lineup_params[:player_ids]
 
@@ -25,6 +27,7 @@ class LineupsController < ApplicationController
   end
 
   def update
+    # find and create any lineupplayers that don't already exist
     if @lineup.update(lineup_params)
       render json: @lineup
     else
@@ -38,7 +41,6 @@ class LineupsController < ApplicationController
 
   private
     def create_lineup_players
-      binding.pry
       player_ids = lineup_params[:player_ids]
 
       missing_ids = player_ids - Player.where(id: player_ids).pluck(:id)
@@ -56,6 +58,6 @@ class LineupsController < ApplicationController
     end
 
     def lineup_params
-      params.expect(lineup: [ :user_id, :total_score, :player_ids ])
+      params.expect(lineup: [ :user_id, :total_score, player_ids: [] ])
     end
 end
